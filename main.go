@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
 	fmt.Println("automigration complete")
 }
 
@@ -22,5 +22,30 @@ type User struct {
 	UserName   string
 	CurrentHp int
 	Xp         int
+}
+
+type Item struct {
+	gorm.Model
+	Name       string
+	Attack     int
+	Defense    int
+}
+
+type UserItem struct {
+	gorm.Model
+	User       User
+	UserID     uint
+	Item     Item
+	ItemID     uint
+}
+
+type Quest struct {
+	gorm.Model
+	Loction1       string 
+	Loction2       string 
+	Loction3       string 
+	Status         int
+	User           User
+	UserID         uint
 }
 
