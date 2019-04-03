@@ -20,6 +20,12 @@ go build
 
 ## Usage
 
+### Environment Variables
+You must have the following environment variables set:
+```bash
+FOUR_ID
+FOUR_SECRET
+```
 
 ### Running the Server
 To start the API server in development:
