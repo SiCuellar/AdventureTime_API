@@ -10,6 +10,7 @@ import (
 	"os"
 
   "github.com/SiCuellar/AdventureTime_API/migrations"
+  "github.com/rs/cors"
 )
 
 func main() {
@@ -21,7 +22,8 @@ func main() {
 	router.HandleFunc("/api/v1/login", LoginHandler).Methods("POST")
 
 	fmt.Println("Listening on port: " + os.Getenv("PORT"))
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
+  mux := cors.Default().Handler(router)
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), mux))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
