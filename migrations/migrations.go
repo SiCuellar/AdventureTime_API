@@ -1,4 +1,4 @@
-package migrations
+package db
 
 import (
 		"fmt"
@@ -7,26 +7,43 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func Migrate() {
+var connection *gorm.DB
+
+func Connect() {
+	var err error
 	db_url := os.Getenv("DATABASE_URL")
 
 	if db_url == "" {
-		db_url = "host=localhost port=5432 user=root dbname=adventuretime sslmode=disable password="
+		db_url = "\n host=localhost\n port=5432\n user=root\n dbname=adventuretime\n sslmode=disable\n password="
 	}
+	
+	// fmt.Printf("Using database config string: %s\n", db_url)
 
-	fmt.Printf("Using database config string: %s\n", db_url)
-
-	db, err := gorm.Open("postgres", db_url)
-	defer db.Close()
+	connection, err = gorm.Open("postgres", db_url)
 
 	if err != nil {
 		fmt.Println(err)
 	}
+	// defer fmt.Println("Connected to db adventuretime")
+}
 
-	db.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
+func Migrate() {
+	Connect()
+	connection.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
+	Close()
 	defer fmt.Println("Automigration Complete.")
 }
 
+func Close() {
+	connection.Close()
+	// defer fmt.Println("Connection to db adventuretime closed.")
+}
+
+func NewQuest(newQuest Quest) {
+	Connect()
+	connection.NewRecord(newQuest)
+	connection.Create(&newQuest)
+}
 type User struct {
 	gorm.Model
 	UserName  string
@@ -48,13 +65,12 @@ type UserItem struct {
 	Item   Item
 	ItemID uint
 }
-
 type Quest struct {
 	gorm.Model
-	Loction1 string
-	Loction2 string
-	Loction3 string
-	Status   int
+	Location1 string
+	Location2 string
+	Location3 string
+	Status   int 
 	User     User
 	UserID   uint
 }
