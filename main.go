@@ -1,24 +1,38 @@
 package main
 
 import (
-	// "github.com/gorilla/mux"
-	"github.com/SiCuellar/AdventureTime_API/migrations"
-	"github.com/SiCuellar/AdventureTime_API/environment"
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+  "github.com/SiCuellar/AdventureTime_API/environment"
+  "github.com/SiCuellar/AdventureTime_API/migrations"
 )
 
 func main() {
 	db.Migrate()
-	// db.Connect()
-	environment.SetVariables()
-	buildQuest()
-	// defer db.Close()
+	// environment.SetVariables()
+	// buildQuest()
+
+	db.Connect()
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/api/v1/login", GetLoginHandler).Methods("POST")
+
+	fmt.Println("Listening on port: " + os.Getenv("PORT"))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
 }
 
+func GetLoginHandler(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	user := db.Connection.Preload("Items").Find(&db.User{}, params["user_id"])
+	json.NewEncoder(w).Encode(user)
+}
 
 func getQuestLocations() []Item {
 	resp, err := http.Get("https://api.foursquare.com/v2/venues/explore?client_id=" + os.Getenv("FOUR_ID") + "&client_secret=" + os.Getenv("FOUR_SECRET") + "&v=20190401&ll=39.7527044,-104.9918035,&radius=100")
@@ -34,7 +48,6 @@ func getQuestLocations() []Item {
 	return []Item{}
 }
 
-
 func buildQuest() {
 	for _, item := range getQuestLocations() {
 		locations := item.Venue.Location.FormattedAddress
@@ -44,29 +57,24 @@ func buildQuest() {
 	defer db.Close()
 }
 
-
-
-
-
-
 type Result struct {
 	Response struct {
-	Groups []struct {
-		Items []Item
-		} 
+		Groups []struct {
+			Items []Item
+		}
 	}
 }
 
-type Location struct{
-	Lat float64
-	Lng float64
-	Distance int
+type Location struct {
+	Lat              float64
+	Lng              float64
+	Distance         int
 	FormattedAddress []string // check this later
 }
 
 type Venue struct {
-	Id string
-	Name string
+	Id       string
+	Name     string
 	Location Location
 }
 
