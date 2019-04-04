@@ -1,62 +1,75 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	// "github.com/gorilla/mux"
+	"github.com/SiCuellar/AdventureTime_API/migrations"
+	"github.com/SiCuellar/AdventureTime_API/environment"
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
-	db_url := os.Getenv("DATABASE_URL")
-
-	if db_url == "" {
-		db_url = "host=localhost port=5432 user=gorm dbname=adventuretime sslmode=disable password="
-	}
-
-	fmt.Printf("Using database config string: %s\n", db_url)
-
-	db, err := gorm.Open("postgres", db_url)
-	defer db.Close()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	db.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
-	fmt.Println("Automigration Complete.")
+	db.Migrate()
+	// db.Connect()
+	environment.SetVariables()
+	buildQuest()
+	// defer db.Close()
 }
 
-type User struct {
-	gorm.Model
-	UserName  string
-	CurrentHp int
-	Xp        int
+
+func getQuestLocations() []Item {
+	resp, err := http.Get("https://api.foursquare.com/v2/venues/explore?client_id=" + os.Getenv("FOUR_ID") + "&client_secret=" + os.Getenv("FOUR_SECRET") + "&v=20190401&ll=39.7527044,-104.9918035,&radius=100")
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		data, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		var result Result
+		json.Unmarshal([]byte(data), &result)
+		return result.Response.Groups[0].Items[0:3]
+	}
+	return []Item{}
+}
+
+
+func buildQuest() {
+	for _, item := range getQuestLocations() {
+		locations := item.Venue.Location.FormattedAddress
+		quest := db.Quest{Location1: locations[0], Location2: locations[1], Location3: locations[2]}
+		db.NewQuest(quest)
+	}
+	defer db.Close()
+}
+
+
+
+
+
+
+type Result struct {
+	Response struct {
+	Groups []struct {
+		Items []Item
+		} 
+	}
+}
+
+type Location struct{
+	Lat float64
+	Lng float64
+	Distance int
+	FormattedAddress []string // check this later
+}
+
+type Venue struct {
+	Id string
+	Name string
+	Location Location
 }
 
 type Item struct {
-	gorm.Model
-	Name    string
-	Attack  int
-	Defense int
-}
-
-type UserItem struct {
-	gorm.Model
-	User   User
-	UserID uint
-	Item   Item
-	ItemID uint
-}
-
-type Quest struct {
-	gorm.Model
-	Loction1 string
-	Loction2 string
-	Loction3 string
-	Status   int
-	User     User
-	UserID   uint
+	Venue Venue
 }
