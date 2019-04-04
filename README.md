@@ -2,6 +2,8 @@
 
 AdventureTime
 
+Deployment URL: https://adventure-time-m4cap.herokuapp.com/
+
 ## Installation
 
 Grab the source code and `cd` into the directory:
