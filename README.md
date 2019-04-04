@@ -43,8 +43,8 @@ To start the API server in production:
 
 ### API Endpoints
 
-#### `POST /api/v1/login?user_id=<USER_ID>`
-This endpoint will return the user object associated with <USER_ID>.
+#### `POST /api/v1/login?username=<USERNAME>`
+This endpoint will return the user object associated with <USERNAME>.
 
 Example Response:
 ```json

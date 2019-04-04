@@ -14,20 +14,19 @@ import (
 
 func main() {
 	db.Migrate()
-
 	db.Connect()
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/v1/login", GetLoginHandler).Methods("POST")
+	router.HandleFunc("/api/v1/login", LoginHandler).Methods("POST")
 
 	fmt.Println("Listening on port: " + os.Getenv("PORT"))
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
 }
 
-func GetLoginHandler(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	user := db.Connection.Preload("Items").Find(&db.User{}, params["user_id"])
+	user := db.Connection.Preload("Items").Where("user_name = ?", params["username"]).First(&db.User{})
 	json.NewEncoder(w).Encode(user)
 }
 
