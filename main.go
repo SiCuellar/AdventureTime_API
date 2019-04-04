@@ -9,14 +9,11 @@ import (
 	"net/http"
 	"os"
 
-  "github.com/SiCuellar/AdventureTime_API/environment"
   "github.com/SiCuellar/AdventureTime_API/migrations"
 )
 
 func main() {
 	db.Migrate()
-	// environment.SetVariables()
-	// buildQuest()
 
 	db.Connect()
 
