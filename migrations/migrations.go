@@ -67,6 +67,7 @@ type UserItem struct {
 	Item   Item
 	ItemID uint
 }
+
 type Quest struct {
 	gorm.Model
 	Location1 string
