@@ -2,15 +2,17 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-  "strconv"
+	"strconv"
+	"strings"
 
-  "github.com/SiCuellar/AdventureTime_API/migrations"
+	"github.com/gorilla/mux"
+
+	db "github.com/SiCuellar/AdventureTime_API/migrations"
 )
 
 func main() {
@@ -34,21 +36,33 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func QuestHandler(w http.ResponseWriter, r *http.Request) {
-  params := r.URL.Query()
+	params := r.URL.Query()
 
-  userID, _ := strconv.ParseUint(params["user_id"][0], 10, 32)
-  lat := params["lat"][0]
-  long := params["long"][0]
+	userID, _ := strconv.ParseUint(params["user_id"][0], 10, 32)
+	lat := params["lat"][0]
+	long := params["long"][0]
 
-  quest := buildQuest(lat, long, userID)
+	var oldQuest db.Quest
 
-  json.NewEncoder(w).Encode(quest)
+	query := db.Connection.Where("status = ?", 0).Where("user_id = ?", userID).First(&oldQuest)
+
+	var quest db.Quest
+
+	if query.RecordNotFound() {
+		fmt.Println("Previous Quest not found. Generating new quest.")
+		quest = buildQuest(lat, long, userID)
+	} else {
+		fmt.Println("Previous Quest Found! ")
+		quest = oldQuest
+	}
+
+	json.NewEncoder(w).Encode(quest)
 }
 
 func getQuestLocations(lat string, long string) []FsItem {
 	resp, err := http.Get("https://api.foursquare.com/v2/venues/explore?client_id=" + os.Getenv("FOUR_ID") + "&client_secret=" + os.Getenv("FOUR_SECRET") + "&v=20190404&ll=" + lat + "," + long + ",&radius=750&limit=4")
 
-  if err != nil {
+	if err != nil {
 		log.Fatal(err)
 	} else {
 		data, _ := ioutil.ReadAll(resp.Body)
@@ -58,17 +72,21 @@ func getQuestLocations(lat string, long string) []FsItem {
 		return result.Response.Groups[0].Items
 	}
 
-  return []FsItem{}
+	return []FsItem{}
 }
 
 func buildQuest(lat string, long string, userID uint64) db.Quest {
-  locations := getQuestLocations(lat, long)
+	locations := getQuestLocations(lat, long)
 
-  quest := db.Quest{Location1: locations[0].Venue.Id, Location2: locations[1].Venue.Id, Location3: locations[2].Venue.Id, UserID: uint(userID)}
+	quest := db.Quest{
+		Location1: locations[0].Venue.Id + "|" + strings.Join(locations[0].Venue.Location.FormattedAddress, ", "),
+		Location2: locations[1].Venue.Id + "|" + strings.Join(locations[1].Venue.Location.FormattedAddress, ", "),
+		Location3: locations[2].Venue.Id + "|" + strings.Join(locations[2].Venue.Location.FormattedAddress, ", "),
+		UserID:    uint(userID)}
 
-  db.NewQuest(quest)
+	db.NewQuest(quest)
 
-  return quest
+	return quest
 }
 
 type Result struct {

@@ -2,9 +2,10 @@ package db
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"os"
 )
 
 var Connection *gorm.DB
@@ -70,10 +71,10 @@ type UserItem struct {
 
 type Quest struct {
 	gorm.Model
-	Location1 string
-	Location2 string
-	Location3 string
+	Location1 string ``
+	Location2 string ``
+	Location3 string ``
 	Status    int
-	User      User
+	User      User `json:"-"`
 	UserID    uint
 }

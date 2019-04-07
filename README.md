@@ -72,6 +72,33 @@ Example Response:
 }
 ```
 
+#### `POST /api/v1/quest?user_id=<USER_ID>&lat=<LATITUDE>&long=<LONGITUDE>`
+This endpoint will create a new quest with provided lat and long, or return the currently active one if it exists for a given user.
+
+```json
+{
+    "ID": 0,
+    "CreatedAt": "0001-01-01T00:00:00Z",
+    "UpdatedAt": "0001-01-01T00:00:00Z",
+    "DeletedAt": null,
+    "Location1": "4a8b585ff964a520360c20e3|1822 Blake St (btwn 19th St & 18th St), Denver, CO 80202, United States",
+    "Location2": "4e10f909483bee47ff2e50c0|Denver, CO 80204, United States",
+    "Location3": "53220885498e6416b2ed973a|1433 17th St (Blake), Denver, CO 80202, United States",
+    "Status": 0,
+    "User": {
+        "ID": 0,
+        "CreatedAt": "0001-01-01T00:00:00Z",
+        "UpdatedAt": "0001-01-01T00:00:00Z",
+        "DeletedAt": null,
+        "username": "",
+        "current_hp": 0,
+        "current_xp": 0,
+        "items": null
+    },
+    "UserID": 1
+}
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
