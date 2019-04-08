@@ -12,15 +12,14 @@ var Connection *gorm.DB
 
 func Connect() {
 	var err error
-	db_url := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
-	if db_url == "" {
-		db_url = "\n host=localhost\n port=5432\n user=postgres\n dbname=adventuretime\n sslmode=disable\n password="
+	if dbURL == "" {
+		dbURL = "\n host=localhost\n port=5432\n user=postgres\n dbname=adventuretime\n sslmode=disable\n password="
 	}
 
-	// fmt.Printf("Using database config string: %s\n", db_url)
-
-	Connection, err = gorm.Open("postgres", db_url)
+	// fmt.Printf("Using database config string: %s\n", dbURL)
+	Connection, err = gorm.Open("postgres", dbURL)
 
 	if err != nil {
 		fmt.Println(err)
@@ -31,7 +30,6 @@ func Connect() {
 func Migrate() {
 	Connect()
 	Connection.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
-	Close()
 	defer fmt.Println("Automigration Complete.")
 }
 
@@ -41,7 +39,6 @@ func Close() {
 }
 
 func NewQuest(newQuest Quest) {
-	Connect()
 	Connection.NewRecord(newQuest)
 	Connection.Create(&newQuest)
 }
@@ -63,18 +60,18 @@ type Item struct {
 
 type UserItem struct {
 	gorm.Model
-	User   User
-	UserID uint
-	Item   Item
-	ItemID uint
+	User   User `json:"-"`
+	UserID uint `json:"user_id"`
+	Item   Item `json:"-"`
+	ItemID uint `json:"item_id"`
 }
 
 type Quest struct {
 	gorm.Model
-	Location1 string ``
-	Location2 string ``
-	Location3 string ``
-	Status    int
-	User      User `json:"-"`
-	UserID    uint
+	Location1 string `json:"location_1"`
+	Location2 string `json:"location_2"`
+	Location3 string `json:"location_3"`
+	Status    int    `json:"status"`
+	User      User   `json:"-"`
+	UserID    uint   `json:"user_id"`
 }
