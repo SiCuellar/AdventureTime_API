@@ -9,5 +9,4 @@ require (
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/rs/cors v1.6.0
 	github.com/stretchr/testify v1.3.0
-	github.com/rs/cors v1.6.0
 )
