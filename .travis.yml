@@ -1,7 +1,10 @@
 language: go
-
 go:
-  - "1.12"
+- '1.12'
 services:
-  - postgresql
+- postgresql
 before_script: psql -c 'CREATE DATABASE adventuretime_test' -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: MhITHtNZbDdl/SVi6lRrINNiES9IwsRQKDT7j9dHn7VGMwt7MbwKR1+GORK14E3Rg1KLgwR6sWzXoG18WGqT4W8ufYpGbDL4T74ECzB1BUDPwciUh7WCFdeReESwaR+m7votf1rYwT6v6GtC/Vowjt1z6OGeVxgpaD8GZKd9Y5cS/zyJxK/xu/cFUyvB1ihTY8EMjW/7yrk/MFHwaURn+aAZxFRbT+WqpsCoic7FL/ZEg557O4k+UnW6TOPS4uRrJT5a/YmMzwLpd4nNXXHXAMbBDIXz47gkUCiAZ7ddu3wSDUIaWZWn9zr1P4XHqaocxMsuAuIHegq7f6GAz9keakHQ3utfPaq4tUoFO338MLzU7XTV1QPJJ7JsE5LlHyhPYudbaORmcAqckReqtRDtzeL6+qDNF40DY7YadugZq64U6cWiSuX0U4eM20REKNuFfj+4ptRH/xg2/HjAMyB3aMc5EiU5oURIOZP0FqNeYilpWOKW5FciZiODpwPlh7ljIjlPGctbz/HjsxxBEwHkWPL610F3HfzWxvMUI3bjoiPmH2ufphtUX2FZqUfW1V2JJyKfhw6ph6Vsf4Dee2DYb/+VpIEAaxL+r19BGo97P9rh3doYXPbaAmSYFijwK5HTSs8lpzV1BjyOiNyMKqimdsNmitls4hAqwchM6O3ytKE=
