@@ -19,7 +19,6 @@ func Connect() {
 	}
 
 	// fmt.Printf("Using database config string: %s\n", db_url)
-
 	Connection, err = gorm.Open("postgres", db_url)
 
 	if err != nil {
@@ -31,7 +30,6 @@ func Connect() {
 func Migrate() {
 	Connect()
 	Connection.AutoMigrate(&User{}, &Item{}, &UserItem{}, &Quest{})
-	Close()
 	defer fmt.Println("Automigration Complete.")
 }
 
@@ -41,7 +39,6 @@ func Close() {
 }
 
 func NewQuest(newQuest Quest) {
-	Connect()
 	Connection.NewRecord(newQuest)
 	Connection.Create(&newQuest)
 }
