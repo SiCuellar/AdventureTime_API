@@ -81,7 +81,11 @@ func TestQuestHandlerWithNewQuest(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &res)
 
 	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
-	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct association")
+	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct user association")
+	assert.Equal(t, "4a8b585ff964a520360c20e3|1822 Blake St (btwn 19th St \u0026 18th St), Denver, CO 80202, United States", res.Location1, "Expected quest object to have 3 locations: location_1")
+	assert.Equal(t, "4e10f909483bee47ff2e50c0|Denver, CO 80204, United States", res.Location2, "Expected quest object to have 3 locations: location_2")
+	assert.Equal(t, "4a58056ff964a52042b71fe3|1539 17th St (17th and Wazee), Denver, CO 80202, United States", res.Location3, "Expected quest object to have 3 locations: location_3")
+	assert.Equal(t, 0, res.Status, "Expected quest object to have 3 locations: location_3")
 }
 
 func TestQuestHandlerWithOldQuest(t *testing.T) {
@@ -104,7 +108,11 @@ func TestQuestHandlerWithOldQuest(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &res)
 
 	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
-	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct association")
+	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct user association")
+	assert.Equal(t, quest.Location1, res.Location1, "Expected quest object to have correct user association")
+	assert.Equal(t, quest.Location2, res.Location2, "Expected quest object to have correct user association")
+	assert.Equal(t, quest.Location3, res.Location3, "Expected quest object to have correct user association")
+	assert.Equal(t, 0, res.Status, "Expected quest object to have correct user association")
 }
 
 func LastUser() db.User {
