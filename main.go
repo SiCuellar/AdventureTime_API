@@ -12,12 +12,12 @@ import (
 
 	"github.com/gorilla/mux"
 
+  "github.com/rs/cors"
 	db "github.com/SiCuellar/AdventureTime_API/migrations"
 )
 
 func main() {
 	db.Migrate()
-
 	db.Connect()
 
 	router := mux.NewRouter()
@@ -26,12 +26,13 @@ func main() {
 	router.HandleFunc("/api/v1/quest", QuestHandler).Methods("POST")
 
 	fmt.Println("Listening on port: " + os.Getenv("PORT"))
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
+  mux := cors.Default().Handler(router)
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), mux))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	user := db.Connection.Preload("Items").Find(&db.User{}, params["user_id"])
+	user := db.Connection.Preload("Items").Where("user_name = ?", params["username"]).First(&db.User{})
 	json.NewEncoder(w).Encode(user)
 }
 
