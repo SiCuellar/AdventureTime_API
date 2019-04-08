@@ -2,3 +2,6 @@ language: go
 
 go:
   - "1.12"
+services:
+  - postgresql
+before_script: psql -c 'CREATE DATABASE adventuretime_test' -U postgres
