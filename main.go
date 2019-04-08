@@ -22,12 +22,17 @@ func main() {
 
 	router := mux.NewRouter()
 
+	router.HandleFunc("/", RootHandler).Methods("GET")
 	router.HandleFunc("/api/v1/login", LoginHandler).Methods("POST")
 	router.HandleFunc("/api/v1/quest", QuestHandler).Methods("POST")
 
 	fmt.Println("Listening on port: " + os.Getenv("PORT"))
   mux := cors.Default().Handler(router)
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), mux))
+}
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello World!")
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
