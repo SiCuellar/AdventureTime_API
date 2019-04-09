@@ -68,10 +68,11 @@ type UserItem struct {
 
 type Quest struct {
 	gorm.Model
-	Location1 string `json:"location_1"`
-	Location2 string `json:"location_2"`
-	Location3 string `json:"location_3"`
-	Status    int    `json:"status"`
-	User      User   `json:"-"`
-	UserID    uint   `json:"user_id"`
+	Location1       string `json:"location_1"`
+	Location2       string `json:"location_2"`
+	Location3       string `json:"location_3"`
+	Status          int    `json:"status"`
+	CurrentLocation int    `json:"current_location" gorm:"default: 1"`
+	User            User   `json:"-"`
+	UserID          uint   `json:"user_id"`
 }
