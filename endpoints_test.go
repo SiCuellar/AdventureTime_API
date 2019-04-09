@@ -115,6 +115,20 @@ func TestQuestHandlerWithOldQuest(t *testing.T) {
 	assert.Equal(t, 0, res.Status, "Expected quest object to have correct user association")
 }
 
+func TestQuestHandlerWithNoLatLong(t *testing.T) {
+	defer ResetDatabase()
+
+	url := fmt.Sprintf("/api/v1/quest?lat&long&user_id=%v", user.ID)
+
+	request, _ := http.NewRequest("POST", url, nil)
+	response := httptest.NewRecorder()
+
+	Router().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
+	assert.Equal(t, "{\"Error\":\"You must provide a lat and long\"}\n", response.Body.String(), "Expected Error JSON")
+}
+
 func LastUser() db.User {
 	var user1 db.User
 	db.Connection.Last(&user1)
