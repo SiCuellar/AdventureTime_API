@@ -6,6 +6,7 @@ import (
 	db "github.com/SiCuellar/AdventureTime_API/migrations"
 	"github.com/gorilla/mux"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -32,19 +33,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func QuestHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
-	var latMissing bool
-	var longMissing bool
-
-	latMissing = params["lat"] == nil || params["lat"][0] == ""
-	longMissing = params["long"] == nil || params["long"][0] == ""
-
-	if latMissing || longMissing {
-		_ = json.NewEncoder(w).Encode(struct {
-			Error string
-		}{
-			"You must provide a lat and long",
-		})
+	if CheckParams(params) {
 		w.WriteHeader(406)
+		_ = json.NewEncoder(w).Encode(ErrorJSON{"You must provide a lat and long"})
 		return
 	}
 
@@ -67,4 +58,18 @@ func QuestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = json.NewEncoder(w).Encode(quest)
+}
+
+func CheckParams(params url.Values) bool {
+	var latMissing bool
+	var longMissing bool
+
+	latMissing = params["lat"] == nil || params["lat"][0] == ""
+	longMissing = params["long"] == nil || params["long"][0] == ""
+
+	return latMissing || longMissing
+}
+
+type ErrorJSON struct {
+	Error string
 }

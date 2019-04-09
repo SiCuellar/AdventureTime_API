@@ -108,10 +108,10 @@ func TestQuestHandlerWithOldQuest(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &res)
 
 	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
-	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct user association")
-	assert.Equal(t, quest.Location1, res.Location1, "Expected quest object to have correct user association")
-	assert.Equal(t, quest.Location2, res.Location2, "Expected quest object to have correct user association")
-	assert.Equal(t, quest.Location3, res.Location3, "Expected quest object to have correct user association")
+	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have a location1")
+	assert.Equal(t, quest.Location1, res.Location1, "Expected quest object to have a lcoat")
+	assert.Equal(t, quest.Location2, res.Location2, "Expected quest object to have a lcoat")
+	assert.Equal(t, quest.Location3, res.Location3, "Expected quest object to have a lcoat")
 	assert.Equal(t, 0, res.Status, "Expected quest object to have correct user association")
 }
 
@@ -125,7 +125,7 @@ func TestQuestHandlerWithNoLatLong(t *testing.T) {
 
 	Router().ServeHTTP(response, request)
 
-	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
+	assert.Equal(t, 406, response.Code, "Status 406 Expected.")
 	assert.Equal(t, "{\"Error\":\"You must provide a lat and long\"}\n", response.Body.String(), "Expected Error JSON")
 }
 
