@@ -18,7 +18,7 @@ func getQuestLocations(lat string, long string) []FsItem {
 	} else {
 		data, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		var result Result
+		var result ExploreResult
 		json.Unmarshal([]byte(data), &result)
 		return result.Response.Groups[0].Items
 	}
@@ -40,7 +40,35 @@ func buildQuest(lat string, long string, userID uint64) db.Quest {
 	return quest
 }
 
-type Result struct {
+func snapToLocation(lat string, long string) []string {
+	resp, err := http.Get("https://api.foursquare.com/v2/venues/search?client_id=" + os.Getenv("FOUR_ID") + "&client_secret=" + os.Getenv("FOUR_SECRET") + "&v=20190409&ll=" + lat + "," + long + ",&radius=500&limit=3")
+
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	} else {
+		data, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		var result CheckinResult
+		json.Unmarshal([]byte(data), &result)
+
+		var ids []string
+
+		for _, venue := range result.Response.Venues {
+			ids = append(ids, venue.Id)
+		}
+
+		return ids
+	}
+}
+
+type CheckinResult struct {
+	Response struct {
+		Venues []Venue `json:"venues"`
+	} `json:"response"`
+}
+
+type ExploreResult struct {
 	Response struct {
 		Groups []struct {
 			Items []FsItem

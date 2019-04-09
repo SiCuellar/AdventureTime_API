@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -108,10 +109,10 @@ func TestQuestHandlerWithOldQuest(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &res)
 
 	assert.Equal(t, 200, response.Code, "Status 200: OK expected.")
-	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have a location1")
-	assert.Equal(t, quest.Location1, res.Location1, "Expected quest object to have a lcoat")
-	assert.Equal(t, quest.Location2, res.Location2, "Expected quest object to have a lcoat")
-	assert.Equal(t, quest.Location3, res.Location3, "Expected quest object to have a lcoat")
+	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct user association")
+	assert.Equal(t, quest.Location1, res.Location1, "Expected quest object to have a location1")
+	assert.Equal(t, quest.Location2, res.Location2, "Expected quest object to have a location2")
+	assert.Equal(t, quest.Location3, res.Location3, "Expected quest object to have a location3")
 	assert.Equal(t, 0, res.Status, "Expected quest object to have correct user association")
 }
 
@@ -126,7 +127,32 @@ func TestQuestHandlerWithNoLatLong(t *testing.T) {
 	Router().ServeHTTP(response, request)
 
 	assert.Equal(t, 406, response.Code, "Status 406 Expected.")
-	assert.Equal(t, "{\"Error\":\"You must provide a lat and long\"}\n", response.Body.String(), "Expected Error JSON")
+	assert.Equal(t, "{\"error\":\"You must provide a lat and long\"}\n", response.Body.String(), "Expected Error JSON")
+}
+
+func TestCheckinHandler(t *testing.T)  {
+	//quest := buildQuest(, "-104.9964413", uint64(user.ID))
+	locations := getQuestLocations("39.7508479", "-104.9964413")
+	quest := db.Quest{
+		Location1: "594147f9dd84420455a2275b|" + strings.Join(locations[0].Venue.Location.FormattedAddress, ", "),
+		Location2: locations[1].Venue.Id + "|" + strings.Join(locations[1].Venue.Location.FormattedAddress, ", "),
+		Location3: locations[2].Venue.Id + "|" + strings.Join(locations[2].Venue.Location.FormattedAddress, ", "),
+		UserID:    uint(user.ID)}
+
+	db.Connection.NewRecord(quest)
+	db.Connection.Create(&quest)
+
+	defer ResetDatabase()
+
+	url := fmt.Sprintf("/api/v1/checkin?lat=39.7508479&long=-104.9964413&user_id=%v", user.ID)
+
+	request, _ := http.NewRequest("POST", url, nil)
+	response := httptest.NewRecorder()
+
+	Router().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "Status Code 200 Expected.")
+	assert.Equal(t, "{\"success\":\"Lat/Long matches current goal location.\"}\n", response.Body.String(), "Expected Error JSON")
 }
 
 func LastUser() db.User {

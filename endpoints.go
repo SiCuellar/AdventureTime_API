@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 func Router() *mux.Router {
@@ -16,6 +17,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/", RootHandler).Methods("GET")
 	router.HandleFunc("/api/v1/login", LoginHandler).Methods("POST")
 	router.HandleFunc("/api/v1/quest", QuestHandler).Methods("POST")
+	router.HandleFunc("/api/v1/checkin", CheckinHandler).Methods("POST")
 
 	return router
 }
@@ -60,6 +62,50 @@ func QuestHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(quest)
 }
 
+func CheckinHandler(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	if CheckParams(params) {
+		w.WriteHeader(406)
+		_ = json.NewEncoder(w).Encode(ErrorJSON{"You must provide a lat and long"})
+		return
+	}
+
+	userID, _ := strconv.ParseUint(params["user_id"][0], 10, 32)
+	lat := params["lat"][0]
+	long := params["long"][0]
+
+	var currentQuest db.Quest
+
+	db.Connection.Where("status = ?", 0).Where("user_id = ?", userID).First(&currentQuest)
+
+	var currentLocationID string
+
+	switch locationIndex := currentQuest.CurrentLocation; locationIndex {
+	case 1:
+		currentLocationID = strings.Split(currentQuest.Location1, "|")[0]
+	case 2:
+		currentLocationID = strings.Split(currentQuest.Location2, "|")[0]
+	case 3:
+		currentLocationID = strings.Split(currentQuest.Location3, "|")[0]
+	}
+
+	ids := snapToLocation(lat, long)
+	flag := false
+
+	for _, id := range ids {
+		if id == currentLocationID {
+			flag = true
+		}
+	}
+
+	if flag {
+		_ = json.NewEncoder(w).Encode(CheckinJSON{"Lat/Long matches current goal location."})
+	} else {
+		_ = json.NewEncoder(w).Encode(ErrorJSON{"Lat/Long does not match current goal location "})
+	}
+}
+
 func CheckParams(params url.Values) bool {
 	var latMissing bool
 	var longMissing bool
@@ -71,5 +117,9 @@ func CheckParams(params url.Values) bool {
 }
 
 type ErrorJSON struct {
-	Error string
+	Error string `json:"error"`
+}
+
+type CheckinJSON struct {
+	Success string `json:"success"`
 }
