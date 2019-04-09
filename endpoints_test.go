@@ -131,8 +131,8 @@ func TestQuestHandlerWithNoLatLong(t *testing.T) {
 }
 
 func TestCheckinHandler(t *testing.T)  {
-	//quest := buildQuest(, "-104.9964413", uint64(user.ID))
 	locations := getQuestLocations("39.7508479", "-104.9964413")
+
 	quest := db.Quest{
 		Location1: "594147f9dd84420455a2275b|" + strings.Join(locations[0].Venue.Location.FormattedAddress, ", "),
 		Location2: locations[1].Venue.Id + "|" + strings.Join(locations[1].Venue.Location.FormattedAddress, ", "),

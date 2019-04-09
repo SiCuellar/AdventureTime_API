@@ -102,7 +102,7 @@ func CheckinHandler(w http.ResponseWriter, r *http.Request) {
 	if flag {
 		_ = json.NewEncoder(w).Encode(CheckinJSON{"Lat/Long matches current goal location."})
 	} else {
-		_ = json.NewEncoder(w).Encode(ErrorJSON{"Lat/Long does not match current goal location "})
+		_ = json.NewEncoder(w).Encode(ErrorJSON{"Lat/Long does not match current goal location."})
 	}
 }
 

@@ -109,6 +109,21 @@ If a lat/long is not provided, the following json will be returned:
 }
 ```
 
+#### `POST /api/v1/checkin?user_id=<USER_ID>&lat=<LATITUDE>&long=<LONGITUDE>`
+This endpoint will match the lat/long provided to a set of likely foursqaure location IDS. A successful match will return:
+
+```json
+{
+    "success": "Lat/Long matches current goal location."
+}
+```
+An unsuccessful match will return:
+```json
+{
+    "error": "Lat/Long does not match current goal location."
+}
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
