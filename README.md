@@ -16,7 +16,7 @@ cd AdventureTime_API
 Then download all the dependencies and compile an executable:
 
 ```bash
-go mod download
+go mod download``
 go build
 ```
 
@@ -98,6 +98,14 @@ This endpoint will create a new quest with provided lat and long, or return the 
         "items": null
     },
     "UserID": 1
+}
+```
+
+If a lat/long is not provided, the following json will be returned:
+
+```json
+{
+    "Error": "You must provide a lat and long"
 }
 ```
 
