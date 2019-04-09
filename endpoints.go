@@ -20,17 +20,33 @@ func Router() *mux.Router {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello World!")
+	_, _ = fmt.Fprintln(w, "Hello World!")
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	user := db.Connection.Preload("Items").Where("user_name = ?", params["username"]).First(&db.User{})
-	json.NewEncoder(w).Encode(user)
+	_ = json.NewEncoder(w).Encode(user)
 }
 
 func QuestHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
+
+	var latMissing bool
+	var longMissing bool
+
+	latMissing = params["lat"] == nil || params["lat"][0] == ""
+	longMissing = params["long"] == nil || params["long"][0] == ""
+
+	if latMissing || longMissing {
+		_ = json.NewEncoder(w).Encode(struct {
+			Error string
+		}{
+			"You must provide a lat and long",
+		})
+		w.WriteHeader(406)
+		return
+	}
 
 	userID, _ := strconv.ParseUint(params["user_id"][0], 10, 32)
 	lat := params["lat"][0]
@@ -50,5 +66,5 @@ func QuestHandler(w http.ResponseWriter, r *http.Request) {
 		quest = oldQuest
 	}
 
-	json.NewEncoder(w).Encode(quest)
+	_ = json.NewEncoder(w).Encode(quest)
 }
