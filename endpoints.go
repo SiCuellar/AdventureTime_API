@@ -18,6 +18,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/v1/login", LoginHandler).Methods("POST")
 	router.HandleFunc("/api/v1/quest", QuestHandler).Methods("POST")
 	router.HandleFunc("/api/v1/checkin", CheckinHandler).Methods("POST")
+	router.HandleFunc("/api/v1/encounter", EncounterHandler).Methods("POST")
 
 	return router
 }
@@ -62,6 +63,27 @@ func QuestHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(quest)
 }
 
+func EncounterHandler(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	userID, _ := strconv.ParseUint(params["user_id"][0], 10, 32)
+	var oldQuest db.Quest
+	_ = db.Connection.Where("status = ?", 0).Where("user_id = ?", userID).First(&oldQuest)
+
+	
+	var user db.User
+	db.Connection.Find&
+	
+	if params["success"][0] == "true" {
+		_ = json.NewEncoder(w).Encode(SuccessJSON{"Succesful Encounter"})
+			oldQuest.CurrentLocation++ 
+
+	} else {
+		_ = json.NewEncoder(w).Encode(ErrorJSON{"Encounter Failed"})
+		
+	}
+}
+
 func CheckinHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -100,7 +122,7 @@ func CheckinHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if flag {
-		_ = json.NewEncoder(w).Encode(CheckinJSON{"Lat/Long matches current goal location."})
+		_ = json.NewEncoder(w).Encode(SuccessJSON{"Lat/Long matches current goal location."})
 	} else {
 		_ = json.NewEncoder(w).Encode(ErrorJSON{"Lat/Long does not match current goal location."})
 	}
@@ -120,6 +142,6 @@ type ErrorJSON struct {
 	Error string `json:"error"`
 }
 
-type CheckinJSON struct {
+type SuccessJSON struct {
 	Success string `json:"success"`
 }
