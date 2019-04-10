@@ -1,3 +1,4 @@
 environment
 coverage.txt
 AdventureTime_API
+.envrc

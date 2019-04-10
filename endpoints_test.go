@@ -155,6 +155,21 @@ func TestCheckinHandler(t *testing.T)  {
 	assert.Equal(t, "{\"success\":\"Lat/Long matches current goal location.\"}\n", response.Body.String(), "Expected Error JSON")
 }
 
+func TestEcounterHandler(t *testing.T)  {
+
+	defer ResetDatabase()
+
+	url := fmt.Sprintf("/api/v1/encounter?success=true&user_id=%v", user.ID)
+
+	request, _ := http.NewRequest("POST", url, nil)
+	response := httptest.NewRecorder()
+
+	Router().ServeHTTP(response, request)
+
+	assert.Equal(t, 200, response.Code, "Status Code 200 Expected.")
+	assert.Equal(t, "{\"success\":\"Succesful Encounter\"}\n", response.Body.String(), "Expected Error JSON")
+}
+
 func LastUser() db.User {
 	var user1 db.User
 	db.Connection.Last(&user1)
