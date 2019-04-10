@@ -72,15 +72,17 @@ func EncounterHandler(w http.ResponseWriter, r *http.Request) {
 
 	
 	var user db.User
-	db.Connection.Find&
+	db.Connection.First(&user, userID)
 	
 	if params["success"][0] == "true" {
 		_ = json.NewEncoder(w).Encode(SuccessJSON{"Succesful Encounter"})
-			oldQuest.CurrentLocation++ 
-
+			oldQuest.CurrentLocation++
+			user.Xp+= 100 
 	} else {
 		_ = json.NewEncoder(w).Encode(ErrorJSON{"Encounter Failed"})
-		
+		user.CurrentHp = 10
+		user.Xp = 0
+		oldQuest.Status = 1 
 	}
 }
 
