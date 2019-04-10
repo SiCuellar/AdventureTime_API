@@ -167,7 +167,7 @@ func TestEcounterHandler(t *testing.T)  {
 	Router().ServeHTTP(response, request)
 
 	assert.Equal(t, 200, response.Code, "Status Code 200 Expected.")
-	assert.Equal(t, "", response.Body.String(), "Expected Error JSON")
+	assert.Equal(t, "{\"success\":\"Succesful Encounter\"}\n", response.Body.String(), "Expected Error JSON")
 }
 
 func LastUser() db.User {

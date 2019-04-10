@@ -84,6 +84,8 @@ func EncounterHandler(w http.ResponseWriter, r *http.Request) {
 		user.Xp = 0
 		oldQuest.Status = 1 
 	}
+	db.Connection.Save(&user)
+	db.Connection.Save(&oldQuest)
 }
 
 func CheckinHandler(w http.ResponseWriter, r *http.Request) {
