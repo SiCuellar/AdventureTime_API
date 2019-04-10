@@ -123,6 +123,20 @@ An unsuccessful match will return:
     "error": "Lat/Long does not match current goal location."
 }
 ```
+#### `POST /api/v1/encounter?success=<TRUE/FALSE>&user_id=<USER_ID>`
+This endpoint will add xp and update location if the encounter is successful and will return:
+
+```json
+{
+    "success": "Succesful Encounter."
+}
+```
+An unsuccessful match will reset XP,HP and quest to initial starting values and will return:
+```json
+{
+    "error": "Encounter Failed."
+}
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
