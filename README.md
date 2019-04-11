@@ -128,7 +128,8 @@ This endpoint will add xp and update location if the encounter is successful and
 
 ```json
 {
-    "success": "Succesful Encounter."
+    "success": "Succesful Encounter.",
+    "quest_completion": "true" // If the encounter is the last location.
 }
 ```
 An unsuccessful match will reset XP,HP and quest to initial starting values and will return:
