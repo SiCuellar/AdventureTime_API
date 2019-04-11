@@ -85,7 +85,7 @@ func TestQuestHandlerWithNewQuest(t *testing.T) {
 	assert.Equal(t, LastUser().ID, res.UserID, "Expected quest object to have correct user association")
 	assert.Equal(t, "4a8b585ff964a520360c20e3|1822 Blake St (btwn 19th St \u0026 18th St), Denver, CO 80202, United States", res.Location1, "Expected quest object to have 3 locations: location_1")
 	assert.Equal(t, "4e10f909483bee47ff2e50c0|Denver, CO 80204, United States", res.Location2, "Expected quest object to have 3 locations: location_2")
-	assert.Equal(t, "4a58056ff964a52042b71fe3|1539 17th St (17th and Wazee), Denver, CO 80202, United States", res.Location3, "Expected quest object to have 3 locations: location_3")
+	assert.Equal(t, "53220885498e6416b2ed973a|1433 17th St (Blake), Denver, CO 80202, United States", res.Location3, "Expected quest object to have 3 locations: location_3")
 	assert.Equal(t, 0, res.Status, "Expected quest object to have 3 locations: location_3")
 }
 
@@ -167,7 +167,7 @@ func TestEcounterHandler(t *testing.T)  {
 	Router().ServeHTTP(response, request)
 
 	assert.Equal(t, 200, response.Code, "Status Code 200 Expected.")
-	assert.Equal(t, "{\"success\":\"Succesful Encounter\"}\n", response.Body.String(), "Expected Error JSON")
+	assert.Equal(t, "{\"success\":\"Successful Encounter\",\"quest_complete\":false}\n", response.Body.String(), "Expected Error JSON")
 }
 
 func LastUser() db.User {
