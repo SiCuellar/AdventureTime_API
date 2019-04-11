@@ -137,6 +137,8 @@ An unsuccessful match will reset XP,HP and quest to initial starting values and 
     "error": "Encounter Failed."
 }
 ```
+## Database Schema 
+<img width="1237" alt="Screen Shot 2019-04-02 at 4 39 17 PM" src="https://user-images.githubusercontent.com/35861146/55933621-33710d80-5beb-11e9-82d4-a5d10dc95af2.png">
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
