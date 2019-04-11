@@ -1,6 +1,6 @@
 # AdventureTime API
 
-AdventureTime
+AdventureTime_API is a Go application that communicates with a React frontend by the same name (https://github.com/nicovigil1/AdventureTime). The combined applications create a geolocation game for users that are feeling adventurous and want to explore their surrounding area. The Application gamifies visiting locations by assigning quests and rewards users in a rogue-lite progression style.
 
 Deployment URL: https://adventure-time-m4cap.herokuapp.com/
 
